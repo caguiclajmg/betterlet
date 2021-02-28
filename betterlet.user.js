@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         BetterLET
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @namespace    http://guarandoo.me
+// @version      1.0
+// @description  LowEndTalk userscript
+// @author       jmg.caguicla
 // @match        https://www.lowendtalk.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue

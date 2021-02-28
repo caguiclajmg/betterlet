@@ -38,6 +38,14 @@ function isFiltered(elem) {
     return false;
 }
 
+function isCommentFiltered(elem) {
+    const user = elem.querySelector("*[class='Author'] > a:first-of-type").title;
+    if(blockedUsers.includes(user)) return true;
+    console.log(user);
+
+    return false;
+}
+
 function filterThread(elem, filterAction) {
     switch(filterAction) {
         case 'Hide':
@@ -49,6 +57,10 @@ function filterThread(elem, filterAction) {
             parent.removeChild(elem);
             parent.appendChild(elem);
     }
+}
+
+function filterComment(elem, filterAction) {
+    elem.style.display = 'none';
 }
 
 GM_config.init({
@@ -85,6 +97,7 @@ const filterAction = GM_config.get('FilterAction');
 const excludeThreadUsers = GM_config.get('HideThreadsByUser').split(',');
 const excludeThreadsPattern = GM_config.get('HideThreadsByTitle');
 const threadTitleRegex = excludeThreadsPattern ? new RegExp(GM_config.get('HideThreadsByTitle')) : null;
+const blockedUsers = GM_config.get('BlockedUsers').split(',');
 
 (function() {
     'use strict';
@@ -94,4 +107,7 @@ const threadTitleRegex = excludeThreadsPattern ? new RegExp(GM_config.get('HideT
 
     const threads = [...document.querySelectorAll("li[id^='Discussion_']")];
     threads.filter(isFiltered).forEach(elem => filterThread(elem, filterAction));
+
+    const comments = [...document.querySelectorAll("li[id^='Comment_']")];
+    comments.filter(isCommentFiltered).forEach(elem => filterComment(elem, filterAction));
 })();

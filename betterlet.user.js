@@ -12,102 +12,118 @@
 
 /* globals GM_config */
 
-function createConfigButton(parent) {
+function addSettingsButton(config, parent) {
     const span = document.createElement('span');
     span.className = 'ToggleFlyout';
     span.style.cursor = 'pointer';
     span.addEventListener('click', e => GM_config.open());
     parent.appendChild(span);
 
-    const a = document.createElement('a');
-    span.appendChild(a);
-    a.className = 'MeButton';
+    const anchor = document.createElement('a');
+    span.appendChild(anchor);
+    anchor.className = 'MeButton';
 
     const icon = document.createElement('span');
     icon.innerText = 'í±€';
-    a.appendChild(icon);
+    anchor.appendChild(icon);
+
+    return span;
 }
 
-function isFiltered(elem) {
-    const user = elem.querySelector('a:first-of-type').title;
-    if(excludeThreadUsers.includes(user)) return true;
+function isThreadFiltered(config, element) {
+    const user = element.querySelector('a:first-of-type').title;
+    if(config.thread.filter.users.includes(user)) return true;
 
-    const titleElement = elem.querySelector("[class='Title'] > a").innerText;
-    if(threadTitleRegex && threadTitleRegex.test(titleElement)) return true;
+    const title = element.querySelector("[class='Title'] > a").innerText;
+    if(config.thread.filter.titles && config.thread.filter.titles.test(title)) return true;
 
     return false;
 }
 
-function isCommentFiltered(elem) {
-    const user = elem.querySelector("*[class='Author'] > a:first-of-type").title;
-    if(blockedUsers.includes(user)) return true;
-    console.log(user);
+function isCommentFiltered(config, element) {
+    const user = element.querySelector("*[class='Author'] > a:first-of-type").title;
+    if(config.comment.filter.users.includes(user)) return true;
 
     return false;
 }
 
-function filterThread(elem, filterAction) {
-    switch(filterAction) {
+function filterThread(config, element) {
+    switch(config.thread.filter.action) {
         case 'Hide':
-            elem.style.display = 'none';
+            element.style.display = 'none';
             break;
 
         case 'Sink':
-            const parent = elem.parentNode;
-            parent.removeChild(elem);
-            parent.appendChild(elem);
+            const parent = element.parentNode;
+            parent.removeChild(element);
+            parent.appendChild(element);
+            break;
     }
 }
 
-function filterComment(elem, filterAction) {
-    elem.style.display = 'none';
+function filterComment(config, element) {
+    element.style.display = 'none';
 }
 
 GM_config.init({
-    'id': 'lowendtalk',
-    'title': 'BetterLET',
-    'fields': {
-        'HideThreadsByUser': {
-            'label': 'Filter threads by user (comma-separated)',
-            'type': 'text',
-            'default': '',
-            'section': ['Thread Filtering', '']
+    id: 'lowendtalk',
+    title: 'BetterLET',
+    fields: {
+        'thread.filter.users': {
+            label: 'Filter by user (comma-separated)',
+            type: 'text',
+            default: '',
+            section: ['Thread Filtering', '']
         },
-        'HideThreadsByTitle': {
-            'label': 'Filter threads with topic (regex)',
-            'type': 'text',
-            'default': ''
+        'thread.filter.titles': {
+            label: 'Filter by title (RegEx)',
+            type: 'text',
+            default: ''
         },
-        'FilterAction': {
-            'label': 'Filter action',
-            'type': 'radio',
-            'options': ['Hide', 'Sink'],
-            'default': 'Hide'
+        'thread.filter.action': {
+            label: 'Action',
+            type: 'radio',
+            options: ['Hide', 'Sink'],
+            default: 'Hide'
         },
-        'BlockedUsers': {
-            'label': 'Block Users (comma-separated)',
-            'type': 'text',
-            'default': '',
-            'section': ['Other Settings', '']
-        },
-    }
+        'comment.filter.users': {
+            label: 'Filter by user (comma-separated)',
+            type: 'text',
+            default: '',
+            section: ['Comment Filtering', '']
+        }
+    },
+    'events': {
+        'save': () => { alert('Settings saved!'); GM_config.close(); },
+    },
 });
-
-const filterAction = GM_config.get('FilterAction');
-const excludeThreadUsers = GM_config.get('HideThreadsByUser').split(',');
-const excludeThreadsPattern = GM_config.get('HideThreadsByTitle');
-const threadTitleRegex = excludeThreadsPattern ? new RegExp(GM_config.get('HideThreadsByTitle')) : null;
-const blockedUsers = GM_config.get('BlockedUsers').split(',');
 
 (function() {
     'use strict';
 
+    const config = {
+        thread: {
+            filter: {
+                users: GM_config.get('thread.filter.users') ? GM_config.get('thread.filter.users').split(',') : [],
+                titles: GM_config.get('thread.filter.titles') ? new RegExp(GM_config.get('thread.filter.titles')) : null,
+                action: GM_config.get('thread.filter.action') || 'Hide'
+            },
+        },
+        comment: {
+            filter: {
+                users: GM_config.get('comment.filter.users') ? GM_config.get('comment.filter.users').split(',') : [],
+            },
+        },
+    };
+
+    console.log(window.location);
+
     const menu = document.querySelector("div[class='MeMenu']");
-    createConfigButton(menu);
+    addSettingsButton(config, menu);
 
     const threads = [...document.querySelectorAll("li[id^='Discussion_']")];
-    threads.filter(isFiltered).forEach(elem => filterThread(elem, filterAction));
+    threads.filter(e => isThreadFiltered(config, e)).forEach(e => filterThread(config, e));
 
     const comments = [...document.querySelectorAll("li[id^='Comment_']")];
-    comments.filter(isCommentFiltered).forEach(elem => filterComment(elem, filterAction));
+    comments.filter(e => isCommentFiltered(config, e)).forEach(e => filterComment(config, e));
 })();

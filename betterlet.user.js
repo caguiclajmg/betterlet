@@ -8,8 +8,9 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
-// @global       GM_config
 // ==/UserScript==
+
+/* globals GM_config */
 
 function createConfigButton(parent) {
     const span = document.createElement('span');

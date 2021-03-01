@@ -7,7 +7,10 @@
 // @match        https://www.lowendtalk.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_getResourceText
+// @grant        GM_addStyle
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
+// @resource     css_fat32 https://fat32.cf/let-gifs.9bf956b9.css
 // ==/UserScript==
 
 /* globals GM_config */
@@ -91,10 +94,16 @@ GM_config.init({
             type: 'text',
             default: '',
             section: ['Comment Filtering', '']
-        }
+        },
+        'style.externalcss.fat32': {
+            label: 'FAT32',
+            type: 'checkbox',
+            default: false,
+            section: ['External Stylesheets', '']
+        },
     },
     'events': {
-        'save': () => { alert('Settings saved!'); GM_config.close(); },
+        'save': () => { alert('Settings saved!\nRefresh the page for changes to take effect.'); GM_config.close(); },
     },
 });
 
@@ -114,9 +123,14 @@ GM_config.init({
                 users: GM_config.get('comment.filter.users') ? GM_config.get('comment.filter.users').split(',') : [],
             },
         },
+        style: {
+            externalcss: [
+                { id: 'css_fat32', enabled: GM_config.get('style.externalcss.fat32') },
+            ],
+        },
     };
 
-    console.log(window.location);
+    config.style.externalcss.forEach(e => { if(e.enabled) GM_addStyle(GM_getResourceText(e.id)); });
 
     const menu = document.querySelector("div[class='MeMenu']");
     addSettingsButton(config, menu);

@@ -78,7 +78,7 @@ function filterComment(config, element) {
     element.style.display = 'none';
 }
 
-function filterAd(config, element) {
+function joyifyAd(config, element) {
     const adImageReplacements = [
         'https://media.tenor.com/images/69835c92b959e460edfc6ad7f6f9e61c/tenor.gif',
         'https://i.kym-cdn.com/photos/images/newsfeed/001/117/432/515.gif',
@@ -88,15 +88,23 @@ function filterAd(config, element) {
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMyBgqrtSYb-98JaYYtuoIiipsCxy9Sc-8Qw&usqp=CAU',
     ];
 
-    const images = element.querySelectorAll('img');
+    const images = [...element.querySelectorAll('img')];
     images.forEach(e => {
         e.src = adImageReplacements[getRandomInt(0, adImageReplacements.length - 1)];
         e.style.width = '250px';
         e.style.height = '250px';
     });
 
-    const anchors = element.querySelectorAll('a');
+    const anchors = [
+        element.querySelectorAll('a'),
+        ...(element.tagName.toLowerCase() === 'a' ? [element] : []),
+    ];
     anchors.forEach(e => { e.href = 'https://www.clownsinternational.com/' });
+}
+
+function filterAd(config, element) {
+    // NOIDONTTHINKSO
+    joyifyAd(config, element);
 }
 
 GM_config.init({
@@ -127,7 +135,7 @@ GM_config.init({
             section: ['Comment Filtering', '']
         },
         'style.navigation.hideads': {
-            label: 'I like to complain about ads',
+            label: 'Hide Ads',
             type: 'checkbox',
             default: false,
             section: ['Navigation', '']
@@ -181,7 +189,10 @@ GM_config.init({
     const comments = [...document.querySelectorAll("li[id^='Comment_']")];
     comments.filter(e => isCommentFiltered(config, e)).forEach(e => filterComment(config, e));
 
-    const ads = [...document.querySelectorAll("div[class='BoxFilter BoxDiscussionFilter'] ~ div:not(.Box):not(.BoxCategories)")];
+    const ads = [
+        ...document.querySelectorAll("div[class='BoxFilter BoxDiscussionFilter'] ~ div:not(.Box):not(.BoxCategories)"),
+        document.querySelector("#Foot > a"),
+    ];
     ads.filter(e => isAdFiltered(config, e)).forEach(e => filterAd(config, e));
 })();
 

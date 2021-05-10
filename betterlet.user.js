@@ -9,6 +9,7 @@
 // @grant        GM_getValue
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @resource     css_fat32 https://fat32.cf/let-gifs.9bf956b9.css
 // ==/UserScript==
@@ -102,6 +103,60 @@ function joyifyAd(config, element) {
     anchors.forEach(e => { e.href = 'https://www.clownsinternational.com/' });
 }
 
+function addExpandButton(e) {
+    const url = e.querySelector('div.Title > a').href;
+    const options = e.querySelector('span.Options');
+    const a = document.createElement('a');
+    a.classList.add('Bookmark');
+    a.href = url;
+    a.addEventListener('click', _ => { togglePreviewFrame(e); _.preventDefault(); });
+    options.appendChild(a);
+}
+
+function togglePreviewFrame(e) {
+    const frameId = `${e.id}_Preview`;
+    let frame = document.querySelector(`#${frameId}`);
+    if(frame) { frame.style.display = (frame.style.display == 'none') ? 'block' : 'none'; return; }
+
+    frame = document.createElement('div');
+    frame.id = frameId;
+    frame.style.width = '100%';
+    frame.style.height = '500px';
+    e.appendChild(frame);
+
+    const url = e.querySelector('div.Title > a').href;
+    const iframe = document.createElement('iframe');
+    iframe.onload = () => {
+        const document = iframe.contentWindow.document;
+        document.documentElement.scrollTop = 0;
+
+        const content = document.querySelector('#content');
+        const body = document.body;
+
+        const head = document.querySelector('#Head');
+        head.parentNode.removeChild(head);
+
+        const foot = document.querySelector('#Foot');
+        foot.parentNode.removeChild(foot);
+
+        const panel = document.querySelector('#Panel');
+        panel.parentNode.removeChild(panel);
+
+        const rows = [...document.querySelectorAll('.Row')];
+        rows.forEach(row => { row.removeAttribute('class'); });
+
+        const columns = [...document.querySelectorAll('.Column')];
+        columns.forEach(column => { column.removeAttribute('class') });
+
+        const tabs = document.querySelector('.Tabs.DiscussionTabs');
+        tabs.parentNode.removeChild(tabs);
+    };
+    iframe.src = url;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    frame.appendChild(iframe);
+}
+
 function filterAd(config, element) {
     // NOIDONTTHINKSO
     joyifyAd(config, element);
@@ -184,6 +239,7 @@ GM_config.init({
     addSettingsButton(config, menu);
 
     const threads = [...document.querySelectorAll("li[id^='Discussion_']")];
+    threads.forEach(addExpandButton);
     threads.filter(e => isThreadFiltered(config, e)).forEach(e => filterThread(config, e));
 
     const comments = [...document.querySelectorAll("li[id^='Comment_']")];

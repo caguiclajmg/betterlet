@@ -103,14 +103,11 @@ function joyifyAd(config, element) {
     anchors.forEach(e => { e.href = 'https://www.clownsinternational.com/' });
 }
 
-function addExpandButton(e) {
-    const url = e.querySelector('div.Title > a').href;
+function bindExpandEvent(e) {
+    const a = e.querySelector('div.Title > a');
+    const url = a.href;
     const options = e.querySelector('span.Options');
-    const a = document.createElement('a');
-    a.classList.add('Bookmark');
-    a.href = url;
     a.addEventListener('click', _ => { togglePreviewFrame(e); _.preventDefault(); });
-    options.appendChild(a);
 }
 
 function togglePreviewFrame(e) {
@@ -239,7 +236,7 @@ GM_config.init({
     addSettingsButton(config, menu);
 
     const threads = [...document.querySelectorAll("li[id^='Discussion_']")];
-    threads.forEach(addExpandButton);
+    threads.forEach(bindExpandEvent);
     threads.filter(e => isThreadFiltered(config, e)).forEach(e => filterThread(config, e));
 
     const comments = [...document.querySelectorAll("li[id^='Comment_']")];

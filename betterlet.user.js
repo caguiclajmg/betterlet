@@ -79,30 +79,6 @@ function filterComment(config, element) {
     element.style.display = 'none';
 }
 
-function joyifyAd(config, element) {
-    const adImageReplacements = [
-        'https://media.tenor.com/images/69835c92b959e460edfc6ad7f6f9e61c/tenor.gif',
-        'https://i.kym-cdn.com/photos/images/newsfeed/001/117/432/515.gif',
-        'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/53220c91-0c3c-4cd9-92e3-0152ff27a86c/dd24v4o-187f0036-d179-40c4-b9a0-fc72d67989d8.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzUzMjIwYzkxLTBjM2MtNGNkOS05MmUzLTAxNTJmZjI3YTg2Y1wvZGQyNHY0by0xODdmMDAzNi1kMTc5LTQwYzQtYjlhMC1mYzcyZDY3OTg5ZDguZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.3IOyaG-veVLGmNpHIyta5s40b0U12HoNASmE4nWEZbM',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS753V3owMmBI4pK125Nej3RNHqMR3bx_9yZw&usqp=CAU',
-        'https://i.redd.it/5kajy4ncbl411.png',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMyBgqrtSYb-98JaYYtuoIiipsCxy9Sc-8Qw&usqp=CAU',
-    ];
-
-    const images = [...element.querySelectorAll('img')];
-    images.forEach(e => {
-        e.src = adImageReplacements[getRandomInt(0, adImageReplacements.length - 1)];
-        e.style.width = '250px';
-        e.style.height = '250px';
-    });
-
-    const anchors = [
-        element.querySelectorAll('a'),
-        ...(element.tagName.toLowerCase() === 'a' ? [element] : []),
-    ];
-    anchors.forEach(e => { e.href = 'https://www.clownsinternational.com/' });
-}
-
 function bindExpandEvent(e) {
     const a = e.querySelector('div.Title > a');
     const url = a.href;
@@ -156,7 +132,6 @@ function togglePreviewFrame(e) {
 
 function filterAd(config, element) {
     // NOIDONTTHINKSO
-    joyifyAd(config, element);
 }
 
 GM_config.init({
@@ -186,11 +161,17 @@ GM_config.init({
             default: '',
             section: ['Comment Filtering', '']
         },
+        'style.navigation.cardThreads': {
+            label: 'Card Threads',
+            type: 'checkbox',
+            default: false,
+            section: ['Navigation', '']
+        },
         'style.navigation.hideads': {
             label: 'Hide Ads',
             type: 'checkbox',
             default: false,
-            section: ['Navigation', '']
+            section: ['', '']
         },
         'style.externalcss.fat32': {
             label: 'FAT32',
@@ -226,6 +207,7 @@ GM_config.init({
             ],
             navigation: {
                 hideads: GM_config.get('style.navigation.hideads'),
+                cardThreads: GM_config.get('style.navigation.cardThreads'),
             },
         },
     };
@@ -236,7 +218,11 @@ GM_config.init({
     addSettingsButton(config, menu);
 
     const threads = [...document.querySelectorAll("li[id^='Discussion_']")];
-    threads.forEach(bindExpandEvent);
+    if(config.style.navigation.cardThreads) threads.forEach(bindExpandEvent);
+    /*threads.forEach(thread => {
+        const lastComment = thread.querySelector('.LastCommentBy');
+        lastComment.style.display = 'none';
+    });*/
     threads.filter(e => isThreadFiltered(config, e)).forEach(e => filterThread(config, e));
 
     const comments = [...document.querySelectorAll("li[id^='Comment_']")];
@@ -247,5 +233,11 @@ GM_config.init({
         document.querySelector("#Foot > a"),
     ];
     ads.filter(e => isAdFiltered(config, e)).forEach(e => filterAd(config, e));
+
+     /*const editorButtonAnchor = document.querySelector('div.editor-dropdown-image');
+     const gifDiv = editorButtonAnchor.cloneNode(true);
+     const a = gifDiv.querySelector('.editor-insert-dialog');
+     a.style.display = 'none';
+     editorButtonAnchor.parentNode.insertBefore(gifDiv, editorButtonAnchor.nextSibling);*/
 })();
 

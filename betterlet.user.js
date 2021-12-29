@@ -5,6 +5,7 @@
 // @description  LowEndTalk userscript
 // @author       jmg.caguicla
 // @match        https://www.lowendtalk.com/*
+// @match        https://lowendtalk.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_getResourceText

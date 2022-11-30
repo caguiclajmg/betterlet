@@ -246,7 +246,7 @@ GM_config.init({
     ads.filter(e => isAdFiltered(config, e)).forEach(e => filterAd(config, e));
 
     // Complementary theming code for BetterLET CSS
-    if(config.style.externalcss.betterlet) {
+    if(config.style.externalcss.betterlet.enabled) {
         const panel = document.querySelector('#Panel');
         panel.parentElement.removeChild(panel);
 

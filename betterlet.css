@@ -1,0 +1,93 @@
+#Frame {
+  width: 100% !important;
+  padding-top: 4em;
+}
+
+#Body {
+  width: 100% !important;
+}
+
+#Body > .Row {
+  width: 100% !important;
+}
+
+#Body > .Row > div:not(:first-child) {
+  margin: 0;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+#content > ul > li {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+#Body > div.Row > div.Column {
+  margin: 0 !important;
+}
+
+#Head {
+  position: fixed;
+  display: flex;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  padding: 0.5em 2em 0.5em 2em !important;
+}
+
+#Head > :first-child > .SiteTitle {
+  order: 1;
+}
+
+#Head > :first-child > .SiteMenu {
+  order: 2;
+}
+
+#Head > :first-child > .SiteSearch {
+  order: 3;
+}
+
+#Head > :first-child > #ProfilePhotoContainer {
+  order: 4;
+  margin-left: 10px;
+}
+
+#Head > div.Row {
+  display: flex;
+  margin: 0;
+  justify-content: space-between;
+  vertical-align: middle;
+  align-items: center;
+}
+
+#Head > div.Row > * {
+  height: 100%;
+}
+
+#ProfilePhotoContainer {
+  display: inline;
+  position: relative;
+}
+
+#ProfilePhotoContainer:hover > #Panel {
+  display: block;
+  position: absolute;
+  right: 0;
+}
+
+#Panel {
+  display: none;
+  background-color: var(--neutral-shade-3, #fff);
+  border-width: 1px;
+  border-color: var(--primary, #000);
+  border-style: solid;
+  border-radius: 8px;
+  box-shadow: 0 5px 10px #111;
+  padding-left: 1em;
+  padding-right: 1em;
+  z-index: 4;
+}
+
+#Panel * {
+  color: var(--primary, #358244) !important;
+}

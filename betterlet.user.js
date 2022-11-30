@@ -12,6 +12,7 @@
 // @grant        GM_xmlhttpRequest
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @resource     css_fat32 https://fat32.cf/let-gifs.9bf956b9.css
+// @resource     css_betterlet https://github.com/caguiclajmg/betterlet/raw/main/betterlet.css
 // ==/UserScript==
 
 /* globals GM_config */
@@ -161,11 +162,17 @@ GM_config.init({
             default: '',
             section: ['Comment Filtering', '']
         },
+        'style.navigation.stickyNavbar': {
+            label: 'Sticky Navbar',
+            type: 'checkbox',
+            default: false,
+            section: ['Navigation', '']
+        },
         'style.navigation.cardThreads': {
             label: 'Card Threads',
             type: 'checkbox',
             default: false,
-            section: ['Navigation', '']
+            section: ['', '']
         },
         'style.navigation.hideads': {
             label: 'Hide Ads',
@@ -178,6 +185,12 @@ GM_config.init({
             type: 'checkbox',
             default: false,
             section: ['External Stylesheets', '']
+        },
+        'style.externalcss.betterlet': {
+            label: 'BetterLET',
+            type: 'checkbox',
+            default: false,
+            section: ['', '']
         },
     },
     'events': {
@@ -202,27 +215,25 @@ GM_config.init({
             },
         },
         style: {
-            externalcss: [
-                { id: 'css_fat32', enabled: GM_config.get('style.externalcss.fat32') },
-            ],
+            externalcss: {
+                fat32: { id: "css_fat32", enabled: GM_config.get('style.externalcss.fat32') },
+                betterlet: { id: "css_betterlet", enabled: GM_config.get('style.externalcss.betterlet') },
+            },
             navigation: {
                 hideads: GM_config.get('style.navigation.hideads'),
+                stickyNavbar: GM_config.get('style.navigation.stickyNavbar'),
                 cardThreads: GM_config.get('style.navigation.cardThreads'),
             },
         },
     };
 
-    config.style.externalcss.forEach(e => { if(e.enabled) GM_addStyle(GM_getResourceText(e.id)); });
+    Object.values(config.style.externalcss).forEach(e => { if(e.enabled) GM_addStyle(GM_getResourceText(e.id)); });
 
     const menu = document.querySelector("div[class='MeMenu']");
     addSettingsButton(config, menu);
 
     const threads = [...document.querySelectorAll("li[id^='Discussion_']")];
     if(config.style.navigation.cardThreads) threads.forEach(bindExpandEvent);
-    /*threads.forEach(thread => {
-        const lastComment = thread.querySelector('.LastCommentBy');
-        lastComment.style.display = 'none';
-    });*/
     threads.filter(e => isThreadFiltered(config, e)).forEach(e => filterThread(config, e));
 
     const comments = [...document.querySelectorAll("li[id^='Comment_']")];
@@ -234,10 +245,20 @@ GM_config.init({
     ];
     ads.filter(e => isAdFiltered(config, e)).forEach(e => filterAd(config, e));
 
-     /*const editorButtonAnchor = document.querySelector('div.editor-dropdown-image');
-     const gifDiv = editorButtonAnchor.cloneNode(true);
-     const a = gifDiv.querySelector('.editor-insert-dialog');
-     a.style.display = 'none';
-     editorButtonAnchor.parentNode.insertBefore(gifDiv, editorButtonAnchor.nextSibling);*/
+    // Complementary theming code for BetterLET CSS
+    if(config.style.externalcss.betterlet) {
+        const panel = document.querySelector('#Panel');
+        panel.parentElement.removeChild(panel);
+
+        const img = panel.querySelector(':scope > div.MeBox > a.PhotoWrap > img.ProfilePhoto');
+        img.parentElement.removeChild(img);
+
+        const header = document.querySelector('#Head');
+        const container = document.createElement('div');
+        container.id = 'ProfilePhotoContainer';
+        container.appendChild(img);
+        container.appendChild(panel);
+        header.appendChild(container);
+    }
 })();
 

@@ -5,6 +5,8 @@
 
 #Body {
   width: 100% !important;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 #Body > .Row {

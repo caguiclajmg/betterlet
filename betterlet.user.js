@@ -12,7 +12,7 @@
 // @grant        GM_xmlhttpRequest
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @resource     css_fat32 https://fat32.cf/let-gifs.9bf956b9.css
-// @resource     css_betterlet https://github.com/caguiclajmg/betterlet/raw/style/betterlet.css
+// @resource     css_betterlet https://github.com/caguiclajmg/betterlet/raw/main/betterlet.css
 // ==/UserScript==
 
 /* globals GM_config */

@@ -75,6 +75,11 @@
   right: 0;
 }
 
+.ProfilePhotoMedium {
+  width: 30px;
+  height: 30px;
+}
+
 #Panel {
   display: none;
   background-color: var(--neutral-shade-3, #fff);

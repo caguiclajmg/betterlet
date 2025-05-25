@@ -135,70 +135,7 @@ function filterAd(config, element) {
     // NOIDONTTHINKSO
 }
 
-GM_config.init({
-    id: 'lowendtalk',
-    title: 'BetterLET',
-    fields: {
-        'thread.filter.users': {
-            label: 'Filter by user (comma-separated)',
-            type: 'text',
-            default: '',
-            section: ['Thread Filtering', '']
-        },
-        'thread.filter.titles': {
-            label: 'Filter by title (RegEx)',
-            type: 'text',
-            default: ''
-        },
-        'thread.filter.action': {
-            label: 'Action',
-            type: 'radio',
-            options: ['Hide', 'Sink'],
-            default: 'Hide'
-        },
-        'comment.filter.users': {
-            label: 'Filter by user (comma-separated)',
-            type: 'text',
-            default: '',
-            section: ['Comment Filtering', '']
-        },
-        'style.navigation.stickyNavbar': {
-            label: 'Sticky Navbar',
-            type: 'checkbox',
-            default: false,
-            section: ['Navigation', '']
-        },
-        'style.navigation.cardThreads': {
-            label: 'Card Threads',
-            type: 'checkbox',
-            default: false,
-            section: ['', '']
-        },
-        'style.navigation.hideads': {
-            label: 'Hide Ads',
-            type: 'checkbox',
-            default: false,
-            section: ['', '']
-        },
-        'style.externalcss.fat32': {
-            label: 'FAT32',
-            type: 'checkbox',
-            default: false,
-            section: ['External Stylesheets', '']
-        },
-        'style.externalcss.betterlet': {
-            label: 'BetterLET',
-            type: 'checkbox',
-            default: false,
-            section: ['', '']
-        },
-    },
-    'events': {
-        'save': () => { alert('Settings saved!\nRefresh the page for changes to take effect.'); GM_config.close(); },
-    },
-});
-
-(function() {
+function init() {
     'use strict';
 
     const config = {
@@ -260,5 +197,68 @@ GM_config.init({
         container.appendChild(panel);
         header.appendChild(container);
     }
-})();
+}
 
+GM_config.init({
+    id: 'lowendtalk',
+    title: 'BetterLET',
+    fields: {
+        'thread.filter.users': {
+            label: 'Filter by user (comma-separated)',
+            type: 'text',
+            default: '',
+            section: ['Thread Filtering', '']
+        },
+        'thread.filter.titles': {
+            label: 'Filter by title (RegEx)',
+            type: 'text',
+            default: ''
+        },
+        'thread.filter.action': {
+            label: 'Action',
+            type: 'radio',
+            options: ['Hide', 'Sink'],
+            default: 'Hide'
+        },
+        'comment.filter.users': {
+            label: 'Filter by user (comma-separated)',
+            type: 'text',
+            default: '',
+            section: ['Comment Filtering', '']
+        },
+        'style.navigation.stickyNavbar': {
+            label: 'Sticky Navbar',
+            type: 'checkbox',
+            default: false,
+            section: ['Navigation', '']
+        },
+        'style.navigation.cardThreads': {
+            label: 'Card Threads',
+            type: 'checkbox',
+            default: false,
+            section: ['', '']
+        },
+        'style.navigation.hideads': {
+            label: 'Hide Ads',
+            type: 'checkbox',
+            default: false,
+            section: ['', '']
+        },
+        'style.externalcss.fat32': {
+            label: 'FAT32',
+            type: 'checkbox',
+            default: false,
+            section: ['External Stylesheets', '']
+        },
+        'style.externalcss.betterlet': {
+            label: 'BetterLET',
+            type: 'checkbox',
+            default: false,
+            section: ['', '']
+        },
+    },
+    'events': {
+        'save': () => { alert('Settings saved!\nRefresh the page for changes to take effect.'); GM_config.close(); },
+        'init': init,
+    },
+});
